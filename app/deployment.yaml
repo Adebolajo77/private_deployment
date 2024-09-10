@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ollama
+    app.kubernetes.io/instance: rollout-application
+  name: ollama
+  namespace: app
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      name: ollama
+  template:
+    metadata:
+      labels:
+        name: ollama
+    spec:
+      containers:
+      - name: ollama
+        image: 10.10.40.2:5000/ollama:1.0 
+        env:
+        - name: CUDA_VISIBLE_DEVICES
+          value: "0"  # Specify GPU 1 here
+        - name: PATH
+          value: /usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        - name: LD_LIBRARY_PATH
+          value: /usr/local/nvidia/lib:/usr/local/nvidia/lib64
+        - name: NVIDIA_DRIVER_CAPABILITIES
+          value: compute,utility
+        ports:
+        - name: http
+          containerPort: 11434
+          protocol: TCP
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule

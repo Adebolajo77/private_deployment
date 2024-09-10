@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+      app.kubernetes.io/instance: rollout-application
+  name: ollama
+  namespace: app
+spec:
+  type: LoadBalancer
+  selector:
+    name: ollama
+  ports:
+  - port: 80
+    name: http
+    targetPort: http
+    protocol: TCP
